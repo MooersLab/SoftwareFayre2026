@@ -1,0 +1,1447 @@
+% !TeX program = lualatex -shell-escape
+%
+% The above is a magic comment recognized by Textmate, TeXShop, TeXstudio, and TeXworks 
+% =======================================================================
+%  AI-Assisted Shortcuts Plugin for PyMOL 3.0
+%  32-slide Beamer talk with figure placeholders and speaker notes
+%
+%  Speaker notes:
+%    - Notes appear via \note{...} on each frame.
+%    - To display them, uncomment ONE of the two lines just below
+%      \begin{document}. "show notes on second screen=right" is handy
+%      when presenting with a projector plus a laptop screen.
+%
+%  Figure placeholders:
+%    - \figph{...} draws a gray box with a caption of what belongs there.
+%    - Replace each \figph{...} with \includegraphics{...} when the real
+%      figure is ready.
+%=======================================================================
+
+%  <<<<<  uncomment to generate handouts   >>>>>>
+%  <<<<<  comment to generate slides   >>>>>>
+% \documentclass[handout,letter]{beamer}
+% \RequirePackage{luatex85}
+%
+% \usepackage{pgfpages}
+% \mode<handout>{\pgfpagesuselayout{2 on 1}[letterpaper, border shrink = 1mm]}
+% \setbeameroption{show notes}
+% \setbeamercolor{note page}{bg=white}
+% \setbeamertemplate{note page}{\insertnote\par}
+% \setbeamerfont{note page}{size=\footnotesize}
+% %\addtobeamertemplate{note page}{\setbeamerfont{itemize/enumerate subbody}{size=\footnotesize}}{}
+% \setbeamersize{text margin left=0em,text margin right=0em}
+% \addtobeamertemplate{note page}{\setlength{\parskip}{4pt}}
+% >>>>>>
+
+
+% %%%%%% <<<<<  comment above and uncomment below to generate slides only   >>>>>>
+ \documentclass[aspectratio=169,11pt]{beamer}
+% >>>>>>
+
+%  Speaker notes:
+%    - Notes appear via \note{...} on each frame.
+%    - To display them, uncomment ONE of the two lines just below
+%      \begin{document}. "show notes on second screen=right" is handy
+%      when presenting with a projector plus a laptop screen.
+%
+%  Figure placeholders:
+%    - \figph{...} draws a gray box with a caption of what belongs there.
+%    - Replace each \figph{...} with \includegraphics{...} when the real
+%      figure is ready.
+%=======================================================================
+\usepackage{minted}
+
+\newminted{python}{
+                   linenos=false,
+                   numbersep=8pt,
+                   gobble=4,
+                   breaklines,
+                   frame=lines,
+                   bgcolor=bgpython,
+                   framesep=3mm}
+
+\newminted{bash}{
+                   linenos=false,
+                   numbersep=8pt,
+                   breaklines,
+                   gobble=4,
+                   frame=lines,
+                   bgcolor=bgbash,
+                   framesep=3mm}
+
+\definecolor{bgpython}{rgb}{0.95,0.95,0.95}
+\definecolor{bgbash}{rgb}{0.95,0.85,0.75}
+
+% \setsansfont{TeX Gyre Heros}
+% \setbeamerfont{note page}{family*=pplx,size=\footnotesize} % Palatino for notes
+% "TeX Gyre Heros can be used as a replacement for Helvetica"
+% In Unix, unzip the following into ~/.fonts
+% In Mac, unzip it, double-click the .otf files, and install using "FontBook"
+%   http://www.gust.org.pl/projects/e-foundry/tex-gyre/heros/qhv2.004otf.zip
+
+\RequirePackage{luatex85}
+\usepackage{animate}
+\usepackage{pgfpages}
+\usepackage{moresize}
+\usetheme{default}
+\beamertemplatenavigationsymbolsempty
+\hypersetup{pdfpagemode=UseNone} % don't show bookmarks on initial view
+%tables
+\usepackage{booktabs}% http://ctan.org/pkg/booktabs
+% font
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{fix-cm}
+\usepackage{fontspec}
+\usepackage{gensymb}
+\usepackage{tabularx,booktabs}
+\usepackage{enumitem}
+
+%\usetheme{Madrid}
+%\usecolortheme{seahorse}
+%\useinnertheme{rectangles}
+%\setbeamertemplate{navigation symbols}{}   % remove navigation clutter
+\setbeamertemplate{caption}[numbered]
+
+% Approximate Arial with a clean sans-serif face
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+\usepackage{graphicx}
+%\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{tikz}
+
+% Center the title and increase its size
+\setbeamertemplate{frametitle}[default][center]
+\setbeamerfont{frametitle}{size=\huge}
+
+
+% named colors
+\definecolor{offwhite}{RGB}{249,242,255}
+\definecolor{foreground}{RGB}{25,25,25}
+\definecolor{background}{RGB}{255,255,255}
+\definecolor{title}{RGB}{100,0,0}
+\definecolor{gray}{RGB}{155,155,155}
+\definecolor{subtitle}{RGB}{50,0,0}
+\definecolor{hilight}{RGB}{102,255,204}
+\definecolor{vhilight}{RGB}{255,111,207}
+\definecolor{lolight}{RGB}{155,155,155}
+%\definecolor{green}{RGB}{125,250,125}
+
+% use those colors
+
+\setbeamercolor{titlelike}{fg=title}
+\setbeamercolor{subtitle}{fg=subtitle}
+\setbeamercolor{institute}{fg=gray}
+\setbeamercolor{normal text}{fg=foreground,bg=background}
+\setbeamercolor{item}{fg=foreground} % color of bullets
+\setbeamercolor{subitem}{fg=gray}
+\setbeamercolor{itemize/enumerate subbody}{fg=gray}
+\setbeamertemplate{itemize subitem}{{\textendash}}
+\setbeamerfont{itemize/enumerate subbody}{size=\footnotesize}
+\setbeamerfont{itemize/enumerate subitem}{size=\footnotesize}
+\setbeamercolor{section in toc}{fg=title}
+\setbeamercolor{caption name}{fg=title}
+
+% page number
+\setbeamertemplate{footline}{%
+    \raisebox{5pt}{\makebox[\paperwidth]{\hfill\makebox[20pt]{\color{gray}
+          \scriptsize\insertframenumber}}}\hspace*{5pt}}
+
+% add a bit of space at the top of the notes page
+\addtobeamertemplate{note page}{\setlength{\parskip}{12pt}}
+
+% a few macros
+\newcommand{\bi}{\begin{itemize}[font=$\bullet$\scshape\bfseries]}
+\newcommand{\ei}{\end{itemize}}
+\newcommand{\ig}{\includegraphics}
+\newcommand{\subt}[1]{{\footnotesize \color{subtitle} {#1}}}
+
+\usepackage{latexsym} % for squares for the check-list environment
+\newenvironment{checklist}{%
+  \begin{list}{}{}% whatever you want the list to be
+  \let\olditem\item
+  \renewcommand\item{\olditem[$\Box$] }
+}{%
+  \end{list}
+}
+
+
+
+
+% ---- Figure placeholder command -------------------------------------
+% Usage: \figph[width]{description text}
+\newcommand{\figph}[2][0.72\linewidth]{%
+  \setlength{\fboxsep}{0pt}%
+  \begin{center}%
+  \fcolorbox{gray!60}{gray!12}{%
+    \parbox[c][3.4cm][c]{#1}{\centering\itshape\small
+      [Figure placeholder]\\[2pt]#2}}%
+  \end{center}%
+}
+
+% ---- Metadata -------------------------------------------------------
+\title[PyMOL Shortcuts Manager]{Clickable PyMOL shortcuts with AI assistance}
+\subtitle{Curated shortcuts and generative AI as complements}
+\author[Mooers]{Blaine Mooers}
+\institute[OUHC]{Department of Biochemistry and Physiology\\
+University of Oklahoma Health Campus, Oklahoma City, Oklahoma}
+\date{2026 August 13 \\ Software Fayre \\ 27th Congress and General Assembly of the IUCr\\ Calgary, Alberta}
+
+
+%=======================================================================
+\begin{document}
+
+% To show speaker notes, uncomment exactly one of the following:
+%\setbeameroption{show notes}
+%\setbeameroption{show notes on second screen=right}
+
+%--------------------------------------------------- Slide 1: Title
+\begin{frame}[plain]
+  \titlepage
+  \begin{center}\small
+    \texttt{blaine-mooers@ou.edu}\\
+    \texttt{github.com/MooersLab/SofwareFayre2026}
+  \end{center}
+\end{frame}
+\note{
+I am Blaine Mooers, an associate professor in the Department of Biochemistry and Physiology at the University of Oklahoma Health Campus in Oklahoma City.
+This talk is about a GUI I made to ease using and adding to the pymolshortcuts library that I published in 2020.
+I have used this GUI to bring the shortcuts into the AI era.
+
+In this case, a shorcut is really an alias to a Python function that executes several to many lines of code.
+I did not call them aliases because there is a built-in PyMOL function called alias that stores aliases only in the current session.
+This pymolshortcyts library has been popular whith people who do not fear the command line.
+
+I developed this GUI for the current PyMOL 3.s series to lower the barrier to using the PyMOL shortcuts for people who fear using the command line.
+I also included two kinds of interfaces to large language models.
+
+The core message is that my library of curated shortcuts and AI code generation are complementary. 
+The shortcuts are fast and reliable whereas the AI tools help answer questions about the shortcuts and they can generate new shortcuts. 
+
+The PDF of the slides to this talk are on GitHub at this site.
+The PDF was compiled in LaTeX with beamer.
+The source files are included in the sprit of openess and reporducibility.}
+
+%--------------------------------------------------- Slide 2: Outline
+\begin{frame}{Outline}
+  \tableofcontents[hideallsubsections]
+\end{frame}
+\note{
+I will cover my motivation, the features of the plugin, why the shortcuts still matter in the age of AI, and how AI can work with the shortcuts..}
+
+\section{(Re)-introducing the pymolshortcuts}
+
+%--------------------------------------------------- Slide 3: PyMOL power
+\begin{frame}{PyMOL is powerful but difficult to use}
+    \begin{columns}[T]
+      \begin{column}{0.49\linewidth}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item Popular for making movies and images for publication of biolgoical macromolecules. 
+    \item Global views of proteins are easy for beginners.
+    \item Close-up views of active sites and allosteric sites are 
+          harder to produce.
+    \item Exquisite control over 600 settings and commands.
+    \item Extensible through PML or Python.
+  \end{itemize}
+\end{column}
+     \begin{column}{0.49\linewidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{./figs/pymol-GUI-5}
+        \caption{PyMOL 3.1.8 GUI with PDB-ID 1LW9 (Gassner et al. 2003)}
+      \end{figure}
+    \end{column}
+  \end{columns}
+  % \vfill
+ %  \small\textit{Analogy: PyMOL is a professional camera. Beginners can take a
+ %  snapshot, but the manual controls that make a striking image sit behind a
+ %  wall of commands.}
+\end{frame}
+\note{PyMOL is a popular program for publishing images of biological molecules.
+One of its superpowers is that beginners can make beautiful overall views of protein structures through pull-down menus.
+This figure of a ribbon diagram of T4 lysozyme generate with a preset selected from pulldown menu that provides the gray color
+on the inside of the ribbons that the color spectrum from the blue N-terminus to the red C-terminus.
+
+Close-up views of active sites are harder, because it takes skill to hide the excess detail and deliver the message quickly.
+
+PyMOL offers over 600 settings and over 600 commands through the pulldown menus, the command line, and script files.
+This is the setterings menu in PyMOL 3.1.8.
+I did a fuzzy search for "internal" and got these settings for the internal GUI on the rightside.
+By clicking on GUI, was able to display the classic internal gui to the left of the new GUI.
+I could control the width of this GUI with the gui\_width setting.
+
+PyMOL is also extensible through its own PML language, a subset of Python, or through Python itself.
+Code from either language can be entered at the PyMOL prompt or read from script files.
+
+The barrier I wanted to lower is the command line because many users limit themselves to the menu out of trouble remembering commands and fear of breaking something, so beginners overestimate the risk of the command line.
+}
+
+
+%--------------------------------------------------- Slide 4: Prior work
+\begin{frame}{pymolshortcuts.py (Mooers 2020)}
+    \vspace{0.5em}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item Python functions mapped to letters and digits but not special keys.
+    \item The function is invoked by entering the shortcut.
+    \item Can by invoked from prompt or script file.
+    \item Example: apply the ambient occlusion effect with a short two-letter code, AO.
+  \end{itemize}
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.76\linewidth]{./figs/AOcodeAOD}
+        \caption{Ambient occlusion shortcuts AO and AOD.}
+      \end{figure}
+  %figph[0.8\linewidth]{AO applied 1wl9 vs the code}
+\end{frame}
+\note{The 2020 shortcuts library proved the value of mapping of Python functions to memorable codes.
+The shortcuts removed typing of long commands or using script files.
+For example, the AO shortcut is mapped to the 17 lines a code that produce photo realistic image.
+The remaining friction was recall of the codes
+and the command window. That gap is what the plugin closes.}
+
+
+%---------------------------------------------------  Slide 5 shortcuts $\equiv$ Python function
+\begin{frame}
+\frametitle{Features of pymolshortcuts.py} 
+\Large{
+\begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item Add new styles of molecular representation
+    \pause
+    \item Address missing features of PyMOL \\
+    (e.g., version control)
+    \pause
+    \item Open external programs \\
+    (e.g., text editors, image editors, MS Word)
+        \pause
+    \item Utilize other Python modules\\
+    (e.g. webrowser, beautifulSoup4)
+     \pause
+    \item Code in docstring $rightarrow$ gateway to scripting
+\end{itemize}
+}
+\end{frame}
+\note{ 
+The PyMOL Shortcuts library was developed to address the limited range of molecular representations in PyMOL and the absence of a number of features that would make using PyMOL more enjoyable.
+The fact that the PyMOL shortcuts are python functions gave us greater freedom then if we had to use alias written in PML code. 
+We're able to use other Python modules and add capabilities that are not built into PyMOL.
+Becaue they have doc strings that are accessible from the PyMOL prompt with the Python help function, 
+we include the Python code in the docstring.
+This enables it to be displayed in the command history window.
+It can be copied from this window.
+ }
+ 
+ 
+%---------------------------------------------------  Slide 6 Unit cell arrays
+\begin{frame}
+\frametitle{Shortcuts for unit cell arrays}
+\begin{center}
+\includegraphics[scale=0.42]{./figs/superCell.png}
+\end{center}
+\footnotesize{Mooers (2020) Protein Sci. 29, 268-276, Fig. 3}
+\end{frame}
+\note{Next, I like to give some concrete examples of features that are still absent from PyMOL.
+Their absence can be annoying.
+In the upper left we have the cemetery mates that have been generated around AA symmetric unit this is overlay with the corresponding unit cell.
+Many times I would rather see how the proteins are filling out the unit cell.
+This shortcuts have digits that specify the number of repeats in the ABNC directions.
+They're making a multiple copies of the unit cells helps to visualize solve channels.
+}
+
+
+% % Slide 10 many Models
+% \begin{frame}
+% %\frametitle{`pymolshortcuts' github page}
+% \begin{center}
+% \includegraphics[scale=0.465]{./figs/manyModels.png}
+% \end{center}
+% \end{frame}
+% \note{The main}
+
+%---------------------------------------------------  Slide 7 save file with time stamps
+\defverbatim[colored]\exampleCodeA{
+\Large{
+\begin{bashcode}
+    spse 3fao
+    ls 3fao*
+    3faoy2026m07d18h08m33s30.pse
+\end{bashcode}
+}
+}
+\defverbatim[colored]\exampleCodeB{
+\Large{
+\begin{pythoncode}
+    spng
+    spdb
+\end{pythoncode}
+}
+}
+% Slide timestamps
+\begin{frame}
+\frametitle{Saving file with time stamp}
+\exampleCodeA
+\pause
+Shortcuts for all other file types:
+\exampleCodeB
+% \begin{center}
+% \includegraphics[scale=0.335]{./Figures/saveFileTimeStamp.png}
+% \end{center}
+\end{frame}
+\note{
+Quite often when working interactively he'll build up a molecular scene and want to save it to a session file.
+These files save a snapshot of the current scene.
+You can double click on these files without the PyMOL open by doing so you will open up PyMOL 
+This will allow you to resume your work where you left off. 
+Very often, you will have wanted to save a series of session files so that you could move backwards if a change that you made to the scene prove to be undesirable.
+You have to manually modify the name of the session file every time you save it.
+We made a Python function called SPSE that saves the session file with the timestamp in the session file name.
+
+We made similar shortcuts for all the other file types that you can save from PyMOL.
+}
+
+
+
+%---------------------------------------------------  Slide 8 
+\defverbatim[colored]\exampleCodeC{
+\begin{bashcode}
+    PyMOL>get_view
+    set_view (\
+         1.000000000,    0.000000000,    0.000000000,\
+         0.000000000,    1.000000000,    0.000000000,\
+         0.000000000,    0.000000000,    1.000000000,\
+         0.000000000,    0.000000000, -155.160369873,\
+        35.125881195,   11.478250504,    9.720039368,\
+       122.329620361,  187.991119385,  -20.000000000 )
+\end{bashcode}
+}
+\defverbatim[colored]\exampleCodeD{
+\begin{pythoncode}
+    PyMOL>rv
+    set_view (1.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,-155.16,35.13,
+    11.48,9.72,122.33,187.99,-20.0);
+\end{pythoncode}
+}
+\begin{frame}
+\frametitle{PyMOL command vs rv shortcut}
+\exampleCodeC
+\pause
+rv: rounded view
+\exampleCodeD
+% \begin{center}
+% \includegraphics[scale=0.335]{./Figures/saveFileTimeStamp.png}
+% \end{center}
+\end{frame}
+\note{
+To be able to re-create a molecular scene you can use settings to get back the molecule in its original orientation you execute the command called get you this command gets back this 18 element array this array has precision that might be useful for subatomic particles but not for atoms we made a function that rounds off these numbers to a more reasonable level of precision you have the option of controlling the number of significant digits if these are not enough for you the returned array can now be pasted onto the PyMOL command line along with many other commands separated by; to carry out what I call horizontal scripting which I described in a paper about 10 years ago in protein science this enables highly interactive tweaking of the parameters by using the barrel key to bring back the last issued command and adjusting the perimeter values this is far more convenient than reloading a script file after making edits. Our function rounded use map to the shortcut RV.
+}
+
+
+% % Slide 8 PyMOL's built-in editor
+% \begin{frame}
+% \frametitle{PyMOL's pymolrc editor}
+% File $\rightarrow$ edit pymolrc
+% \begin{center}
+% \includegraphics[scale=0.63]{./Figures/pymolrcEditor.png}
+% \end{center}
+% \end{frame}
+% \note{ }
+
+%---------------------------------------------------  Slide 9
+\begin{frame}{Classes of shortcuts}
+    \vspace{0.5em}
+    \begin{columns}[T]
+          \begin{column}{0.48\linewidth}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item Display H-bonds for publication 
+    \item Display NMR ensembles
+    \item Additional molecular representations
+    \item Biophysical coloring schemes
+    \item Make images in grayscale 
+    \item Crystal packing diagrams
+    \item Generate biological assemblies
+    \item Select buried waters 
+    \item Reorient protien's long axis along veiwport axes
+  \end{itemize}
+\end{column}      
+     \begin{column}{0.48\linewidth}
+ \begin{itemize}[font=$\bullet$\scshape\bfseries]
+   \item Show van der Waals clashes     
+   \item Save files with time stamp (poor man's version control)
+   \item Get settings on single line
+   \item Examples of intricate molecular scenes
+   \item Run git
+   \item Launch text editor (npp: Notepad++; code: VS Code)
+   \item Websearches (e.g., PM: send phrase to PubMed)
+   \item Webapps (e.g., gcal, gmail)      
+ \end{itemize}
+ \end{column}         
+\end{columns}          
+         
+\end{frame}
+\note{
+This list shows the different classes of shortcuts that are available.
+I like to point out that we also support the making of images and grayscale from any mole representation this has great advantages when you are preparing images for a low budget book publisher who wants charges you for color images but not black-and-white ones.
+The lower half of the second list includes examples of Conn external programs so that you can carry out minor chores without leaving the context of PyMOL. At least I should say that you can evoke these programs without leaving the context of PyMOL what you do with these external programs of course may lead to you leaving Paul's contacts but that's up to you as many no context with Jenna is a huge problem with managing one's attention while working with computer computers.
+
+These shortcuts proved the value of mapping of Python functions to memorable codes.
+The shortcuts removed typing of long commands or the hazzle of finding old script files for reuse.
+
+However there is a remaining friction of the need to recall the codes.
+The GUI that I developed was meant to address that problem.
+}
+
+
+\section{The accessibility problem}
+%--------------------------------------------------- Slide 10: The barrier
+\begin{frame}{\underline{F}ear \underline{O}f the \underline{C}ommand \underline{L}ine (FOCL)}
+\begin{columns}[T]
+      \begin{column}{0.38\linewidth}
+            \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item Many users prefer pulldown menus.
+    \item PML and Python code intimidates many users.
+    \item List of shortcuts in the command history window may frighten some users.
+  \end{itemize}
+\end{column}
+     \begin{column}{0.58\linewidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{./figs/shortcuts-listing}
+        \caption{Part of the list of shortcuts printed to the command history window in PyMOL 3.1.8.}
+      \end{figure}
+   \end{column}
+ \end{columns}
+\end{frame}
+\note{
+My primitive solution to this problem was to print the list of Shortcuts and their description to the command history window.
+In the PyMOL three-point X versions, the command history window has been moved to a new location below the viewport.
+You could still copy a code that's been printed to the command history window and paste it into a script file.
+
+However, the command history window looks too much like the PyMOL prompt and it scares many users who fear the PyMOL prompt.
+}
+
+
+%--------------------------------------------------- Slide 11: PyMOL 3.x transition
+\begin{frame}{The PyMOL 3.x versions}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item (+) Modernized look.
+    \item (+) Map molecular scenes to function keys.
+    \item (+) Customized presets.
+    \item (+) Improved tools for movie-making.
+    \item (-) GUI reorganization is disorienting for experienced users.
+    \item (0) Tkinter was replaced with PyQt5, which broke legacy plugins.
+  \end{itemize}
+  \vfill
+  \small\textit{The version jump forced a rebuild of many plugins, so we took the opportunity
+  to build a plugin from scratch.}
+\end{frame}
+\note{
+In the past couple years a new version of pie ball has been released that depends on the pie QT five package for it's GUI.
+This change gave the gooey a more modern look in the opinion of the developer.
+There is no support for saving scenes to function keys so that you can recall these scenes for reuse.
+There's support for making new presets, although the support comes in the form of limiting rigid templates.
+There are also improved tools for making movies.
+The gooey has also been re-organized which it has proven to be disorienting for some long time PyMOL users.
+The replacement tinker with a pie QT five has broken a large number of legacy plug-ins.
+I've never gotten past the simple examples on the PyMOL wiki for making pie plug-ins.
+The switch the pie cutie five and the advent of generative AI encouraged me to give making a plug-in another try.
+}
+
+
+\section{Design goals for plugin's GUI}
+%--------------------------------------------------- Slide 12: The solution
+\begin{frame}{Design goals for pymolshortcuts-manager}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item [  ] The PyQt5-based plugin must remains compatible with the PyMOL 3.x series.
+    \pause
+    \item [  ] Point-and-click installation and execution of the curated shortcut library.
+        \pause
+    \item [  ] The original shortcuts must remain functional, so experienced users keep their existing workflows.
+        \pause
+    \item [  ] Direct access to documentation.
+    
+    \item [  ] Ease code reuse by copying code to clipboard.
+        \pause
+    \item [  ] Query the PyMOL shortcuts via RAG.
+        \pause
+    \item [  ] Use agent harnesses inside PyMOL. 
+        \pause
+    \item [  ] Must be able to open GUI with a shortcut.
+  \end{itemize}
+\end{frame}
+\note{ These were the design goals that I had in mind.
+The first requirement was that the plug-in be compatible with the PyMOL 3X series.
+There is a PT six module available so the length of the lifespan of this plug-in could be shortened by a switch to that a module in the future.
+The other design requirement was point-and-click installation, select selection and execution of the Shortcuts.
+The gooey also had to support direct access to the documentation and the source code from inside of the gooey.
+The user needed the option of copying to the clipboard either the PNL or the python version of the code.
+The guy also needed to bail provide access to AI in the form of a Chatbot and in the form of support for agent harnesses.
+The first kind of AI support can be used to answer questions about shortcuts and define shortcuts it can also be used to generate new shortcuts the second kind of AI support is for greater autonomous use of AI to generate images.
+Last but not least experienced users of the command line version it still needed access to the command line shortcuts and they also needed to have access to the gooey by entering a shortcut at the PyMOL prompt.
+.}
+
+\section{Installation of plugin}
+
+%--------------------------------------------------- Slide 13
+\begin{frame}{Installing the plugin with the Plugin Manager}
+    \url{https://raw.githubusercontent.com/MooersLab/pymolshortcuts-manager/main/pymolshortcuts_manager.py}
+  \begin{columns}[T]
+    \begin{column}{0.30\linewidth}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+        \item Plugin manager at top of list of plugins
+        \item Double click on on entry to open
+        \item Paste the URL to the GitHub Site
+  \end{itemize}
+    \end{column}
+    \begin{column}{0.55\linewidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{./figs/installPlugin}
+        \caption{The plugin manager GUI.}
+        %  The pymolshortcut-manager plugin URL has been pasted to fetch and install it from GitHub.
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
+\note{ PyMOL has built into it a plug-in manager that greatly eases the installation of plug-ins.
+This plug-in manager is found at the top of the list of plug-ins in the plug-in pulldown menu.
+You can point the plug-in manager to a downloaded zip file of the plug-in that you want to install R. you can point it to the get hub site by supplying the URL to that site the plug-in manager will handle the installing of the plug-in in the right location.
+Sometimes the plug-in manager can also handle then stating of any external dependencies but this is not the case for all plug-ins.
+Sometimes for licensing reasons you have to install the dependencies yourself.
+}
+
+
+%--------------------------------------------------- Slide 14 Plugin in list of plugins
+\begin{frame}{pymolshortcuts-manager plugin is now listed}
+  \begin{columns}[T]
+    \begin{column}{0.46\linewidth}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+        \item Success with install
+        \item psm or scg shortcuts also open the GUI
+  \end{itemize}
+    \end{column}
+    \begin{column}{0.50\linewidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{./figs/psmInList}
+        \caption{The plugin is now listed in the Plugin pulldown menu.}
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
+\note{ 
+After successfully installing the Paul Shortcuts manager plug-in it will appear in the list of plug-ins.
+The normal. way of invoking this plug-in is by double clicking on its name in this list however there are two shortcuts that will open up the gooey for those users wanna maximize their time on the command line.
+The first shortcut is called PSM for PyMOL shortcut manager the second shortcut is called SCG for shortcut gooey.
+I provided these two alternatives because I'm likely to forget about them, but if you'll see I can always look them up in the gooey.
+     }
+
+
+\section{Tour of the plugin}
+%--------------------------------------------------- Slide 15: Plugin  Architecture
+\begin{frame}{Eleven functional tabs}
+  \begin{columns}[T]
+    \begin{column}{0.30\linewidth}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item Table of 233 shortcuts.
+    \item Fuzzy search
+    \item Execute with one button
+    \item View PML (vertical and horizontal) and Python code
+    \item View documentation
+  \end{itemize}
+    \end{column}
+    \begin{column}{0.68\linewidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{./figs/shortcuts-tab}
+        \caption{Full plugin window with the eleven-tab interface,
+                 Shortcuts tab active}
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
+\note{This figure shows the interface.
+It has 11 tabs. 
+Some of the tabs have  several panes.
+Only tab that beginning users will want to deal with is the second tab which provides direct access to the shortcuts.
+}
+
+%--------------------------------------------------- Slide 16: Plugin  Architecture
+\begin{frame}{Tag-based search}
+  \begin{center}
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.7\linewidth]{./figs/shortcuts-tag-search}
+        \caption{Tag pulldown and tag text box for editing tags.}
+      \end{figure}
+\end{center}
+\end{frame}
+\note{}
+
+%--------------------------------------------------- Slide 17: Plugin  Architecture
+\begin{frame}{Horizontal script}
+  \begin{center}
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.85\linewidth]{./figs/shortcuts-horizontal-script1}
+        \caption{Horitontal PML code between the veritcal PML code above and the vertical Python code below.}
+      \end{figure}
+\end{center}
+\end{frame}
+\note{This figure shows the tag-search pulldown.
+The tag textbox supports adding tags.
+}
+
+
+%--------------------------------------------------- Slide 18: Plugin  Architecture
+\begin{frame}{Sending horizontal script to PyMOL prompt}
+  \begin{center}
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.7\linewidth]{./figs/shortcuts-horizontal-script2}
+        \caption{Pop-up dialog for sending horizontal script to the PyMOL prompt.}
+      \end{figure}
+\end{center}
+\end{frame}
+\note{This figure showing the sending of the horizontal script to the PyMOL prompt.
+}
+
+%--------------------------------------------------- Slide 19: Add Shortcuts tab
+\begin{frame}{`Add Shortcut' tab}
+ \begin{center}
+     \begin{figure}
+       \centering
+       \includegraphics[width=0.7\linewidth]{./figs/Add-shortcutT}
+       \caption{Top of GUI to add custom shortcuts.}
+     \end{figure}
+   \end{center}
+\end{frame}
+\note{ Add shortcuts}
+
+
+%--------------------------------------------------- Slide 20: Add Shortcuts tab
+\begin{frame}{`Add Shortcut' tab}
+ \begin{center}
+     \begin{figure}
+       \centering
+       \includegraphics[width=0.61\linewidth]{./figs/Add-shortcutM}
+       \caption{Middle of GUI to add custom shortcuts.}
+     \end{figure}
+   \end{center}
+\end{frame}
+\note{ Add shortcuts}
+
+
+%--------------------------------------------------- Slide 21: Add Shortcuts tab
+\begin{frame}{`Add Shortcut' tab}
+ \begin{center}
+     \begin{figure}
+       \centering
+       \includegraphics[width=0.73\linewidth]{./figs/Add-shortcutB}
+       \caption{Bottom of GUI to add custom shortcuts.}
+     \end{figure}
+   \end{center}
+\end{frame}
+\note{ Add shortcuts}
+
+%--------------------------------------------------- Slide 22: Shortcuts tab
+\begin{frame}{AI Assistant tab}
+     \begin{figure}
+       \centering
+       \includegraphics[width=0.6\linewidth]{./figs/ai-assistant-tab}
+       \caption{AI assistant tab.}
+     \end{figure}
+\end{frame}
+\note{This is the daily-driver tab. The View Code button matters for the
+education argument later, so plant that seed now. Keep the shortcut count
+consistent at over 180 throughout the talk to avoid confusion.}
+
+%--------------------------------------------------- Slide 23: Shortcuts tab
+\begin{frame}{Agentic AI tab, harness sub-tab}
+     \begin{figure}
+       \centering
+       \includegraphics[width=0.6\linewidth]{./figs/agenticAI-harness-tab}
+       \caption{AI agent tab, harness subtab.}
+     \end{figure}
+\end{frame}
+\note{This is the daily-driver tab. The View Code button matters for the
+education argument later, so plant that seed now. Keep the shortcut count
+consistent at over 180 throughout the talk to avoid confusion.}
+
+% %--------------------------------------------------- Slide 10: Shortcuts tab
+% \begin{frame}{Agentic AI tab, workbench sub-tab}
+%     \begin{columns}[T]
+%       \begin{column}{0.40\linewidth}
+%   \begin{itemize}[font=$\bullet$\scshape\bfseries]
+%     \item categories.
+%     \item values.
+%     \item errors.
+%     \item Four aids
+%   \end{itemize}
+%       \end{column}
+%    \begin{column}{0.58\linewidth}
+%      \begin{figure}
+%        \centering
+%        \includegraphics[width=\linewidth]{./figs/agenticAI-workbench-tab}
+%        \caption{AI agent tab, workbench subtab.}
+%      \end{figure}
+%    \end{column}
+%  \end{columns}
+%   %\vfill
+%   % Eliminates the need to memorize names or type at the PyMOL prompt.
+% \end{frame}
+% \note{This is the daily-driver tab. The View Code button matters for the
+% education argument later, so plant that seed now. Keep the shortcut count
+% consistent at over 180 throughout the talk to avoid confusion.}
+%
+%--------------------------------------------------- Slide 24: agenticAI-skills-tab
+\begin{frame}{Agentic AI tab, Skills sub-tab}
+     \begin{figure}
+       \centering
+       \includegraphics[width=0.6\linewidth]{./figs/agenticAI-skills-tab}
+       \caption{AI agentic tab, skills subtab.}
+     \end{figure}
+\end{frame}
+\note{This is the daily-driver tab. The View Code button matters for the
+education argument later, so plant that seed now. Keep the shortcut count
+consistent at over 180 throughout the talk to avoid confusion.}
+%
+%
+% %--------------------------------------------------- Slide 10: Shortcuts tab
+% \begin{frame}{Agentic AI tab, Runs sub-tab}
+%     \begin{columns}[T]
+%       \begin{column}{0.40\linewidth}
+%   \begin{itemize}[font=$\bullet$\scshape\bfseries]
+%     \item categories.
+%     \item values.
+%     \item errors.
+%     \item Four aids
+%   \end{itemize}
+%       \end{column}
+%    \begin{column}{0.58\linewidth}
+%      \begin{figure}
+%        \centering
+%        \includegraphics[width=\linewidth]{./figs/agenticAI-runs-tab}
+%        \caption{AI agentic tab, runs subtab.}
+%      \end{figure}
+%    \end{column}
+%  \end{columns}
+%   %\vfill
+%   % Eliminates the need to memorize names or type at the PyMOL prompt.
+% \end{frame}
+% \note{This is the daily-driver tab. The View Code button matters for the
+% education argument later, so plant that seed now. Keep the shortcut count
+% consistent at over 180 throughout the talk to avoid confusion.}
+
+
+%--------------------------------------------------- Slide 25: History tab
+\begin{frame}{History tab: automatic workflow documentation}
+    \begin{columns}[T]
+      \begin{column}{0.28\linewidth}
+ \begin{itemize}[font=$\bullet$\scshape\bfseries]
+   \item Logs with a timestamp.
+   \item Exports to CSV
+   \item Shows the 100 most recent executions
+ \end{itemize}
+     \end{column}
+     \begin{column}{0.68\linewidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{./figs/History}
+        \caption{Installaton tab.}
+      \end{figure}
+    \end{column}
+ \end{columns}
+\end{frame}
+\note{History is the reproducibility engine of the plugin. Connect it to the
+later reproducibility argument. The export to JSON matters for FAIR alignment,
+which appears near the end.}
+
+%--------------------------------------------------- Slide 26: Favorites tab
+\begin{frame}{Favorites tab}
+    \begin{columns}[T]
+      \begin{column}{0.28\linewidth}
+ \begin{itemize}[font=$\bullet$\scshape\bfseries]
+   \item Start shortcut for quick-access.
+   \item Persist in JSON file in home directory.
+   \item Reorder by drag-and-drop.
+   \item Can assign categories (not tags).
+ \end{itemize}
+     \end{column}
+     \begin{column}{0.68\linewidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{./figs/favorites-tab}
+        \caption{Favorites tab.}
+      \end{figure}
+    \end{column}
+ \end{columns}
+\end{frame}
+\note{Favorites reduce cognitive load for specialized workflows. The two
+persona examples make the value concrete. Frame this as a design goal rather
+than a measured outcome because we do not yet have a user study.}
+
+%--------------------------------------------------- Slide 27: Tutorials tab
+\begin{frame}{Tutorials tab}
+     \begin{figure}
+       \centering
+       \includegraphics[width=0.8\linewidth]{./figs/Tutorials}
+       \caption{Tutorials for basic tasks.}
+     \end{figure}
+\end{frame}
+\note{This is the daily-driver tab. The View Code button matters for the
+education argument later, so plant that seed now. Keep the shortcut count
+consistent at over 180 throughout the talk to avoid confusion.}
+
+
+%--------------------------------------------------- Slide 28: Citation tab
+\begin{frame}{Citation tab}
+     \begin{figure}
+       \centering
+       \includegraphics[width=0.7\linewidth]{./figs/Citation}
+       \caption{Tutorials for basic tasks.}
+     \end{figure}
+\end{frame}
+\note{This is the daily-driver tab. The View Code button matters for the
+education argument later, so plant that seed now. Keep the shortcut count
+consistent at over 180 throughout the talk to avoid confusion.}
+
+%--------------------------------------------------- Slide 29: Settings tab
+\begin{frame}{Settings tab}
+     \begin{figure}
+       \centering
+       \includegraphics[width=0.8\linewidth]{./figs/Settings}
+       \caption{Settigs for style and key directories.}
+     \end{figure}
+\end{frame}
+\note{This is the daily-driver tab. The View Code button matters for the
+education argument later, so plant that seed now. Keep the shortcut count
+consistent at over 180 throughout the talk to avoid confusion.}
+
+%--------------------------------------------------- Slide 30: Links   1/2
+\begin{frame}{Links tab (1/2)}
+     \begin{figure}
+       \centering
+       \includegraphics[width=0.8\linewidth]{./figs/Links1}
+       \caption{Links to info about the plugin.}
+     \end{figure}
+\end{frame}
+\note{This is the daily-driver tab. The View Code button matters for the
+education argument later, so plant that seed now. Keep the shortcut count
+consistent at over 180 throughout the talk to avoid confusion.}
+
+
+%--------------------------------------------------- Slide 31: Settings tab
+\begin{frame}{Links tab (2/2)}
+     \begin{figure}
+       \centering
+       \includegraphics[width=0.7\linewidth]{./figs/Links2}
+       \caption{Links to AI and author.}
+     \end{figure}
+\end{frame}
+\note{This is the daily-driver tab. The View Code button matters for the
+education argument later, so plant that seed now. Keep the shortcut count
+consistent at over 180 throughout the talk to avoid confusion.}
+
+%--------------------------------------------------- Slide 32:  Installation tab
+\begin{frame}{Installation tab: automated setup}
+    \begin{columns}[T]
+      \begin{column}{0.38\linewidth}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item Clickable setup tasks:
+      \begin{itemize}[font=$\bullet$\scshape\bfseries]
+        \item Install from GitHub
+        \item Edit \texttt{pymolrc}.
+        \item Install optional dependencies.
+      \end{itemize}
+    \item Reports success or failure.
+    \item Troublshooting advice provided.
+    \item `Reinstall' button updates shortcuts.
+  \end{itemize}
+      \end{column}
+   \begin{column}{0.58\linewidth}
+     \begin{figure}
+       \centering
+       \includegraphics[width=\linewidth]{./figs/installation-tab}
+       \caption{Installaton tab.}
+     \end{figure}
+   \end{column}
+ \end{columns}
+\end{frame}
+\note{
+The plug-in manager comes with a default set of shortcuts so that beginners don't have to worry about this installation step.
+This installation GUI provides more experienced users with flexibility to select customized set of shortcuts.
+I plan to move this tab to the far right because it's really only irrelevant to advanced users.
+I think I will rename this tab 'advanced install'.}
+
+\section{Conclusions}
+
+%--------------------------------------------------- Slide 33: FAIR
+\begin{frame}{Alignment with FAIR principles}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item \textbf{Findable:} fuzzy search and the AI Assistant surface
+          relevant shortcuts from vague queries.
+    \item \textbf{Accessible:} automated installation removes command-line
+          setup.
+    \item \textbf{Interoperable:} standard plugin architecture and the public
+          PyMOL Python API, with JSON export.
+    \item \textbf{Reusable:} open licensing, docstrings, and version control.
+  \end{itemize}
+\end{frame}
+\note{FAIR gives a recognized framework that reviewers respect. Map each
+letter to a concrete plugin feature so the alignment is not hand-waving.}
+
+%--------------------------------------------------- Slide 34: Synergy
+\begin{frame}{Best of both worlds: a synergistic design}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item Shortcuts handle routine, well-defined tasks with instant, reliable
+          execution.
+    \item The AI Assistant handles exploration, explanation, and novel
+          situations.
+    \item A single interface supports a learning pipeline:
+          ask, execute, favorite, read the code, then internalize.
+    \item The assistant has context about installed shortcuts, history, and
+          favorites, which general chatbots lack.
+  \end{itemize}
+\end{frame}
+\note{Return to the thesis. The two are complementary, and the integrated
+interface makes the hand-off seamless. This is the payoff of shipping both in
+one plugin rather than sending users to an external chatbot.}
+
+
+%--------------------------------------------------- Slide 35: Acknowledgements
+
+\begin{frame}
+\frametitle{Acknowledgements}
+    \textbf{People:}
+\begin{itemize}
+    \item OUHC: William Beasley
+    \item SSRL: Aina Cohen, Art Lyubimov
+    \item OUHC: 450 students in lectures on PyMOL
+\end{itemize}
+    \textbf{Funding:}
+\begin{itemize}    
+    \item NIH: R01 CA242845
+    \item NIH COBRE in Structural Biology, P20GM103640 (PI: Ann West)
+\end{itemize}
+\end{frame}
+\note{The main}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%--------------------------------------------------- Slide 13: Snippets tab
+\begin{frame}{Snippets tab: fuzzy-search code discovery}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item Over 400 short PyMOL code fragments organized by function.
+    \item Snippets are building blocks for custom scripts, from one-liners to
+          multi-line examples.
+    \item Fuzzy search finds fragments whose names or descriptions
+          approximately match the query, tolerating typos.
+    \item Example: a search for \texttt{transparant} still returns the
+          transparency snippets.
+  \end{itemize}
+  \vfill
+  \small\textit{Beginners can describe what they want in vague terms and still
+  find the right fragment.}
+\end{frame}
+\note{Fuzzy search is the exploration tool for people who do not know the
+exact terminology. Note as a caveat that the fuzzy-match method should be
+verified against the implementation before publication, because the draft
+attributes it to a specific algorithm.}
+
+%--------------------------------------------------- Slide 14: AI Assistant tab
+\begin{frame}{AI Assistant tab: retrieval-augmented generation}
+  \begin{columns}[T]
+    \begin{column}{0.52\linewidth}
+      \textbf{Three steps per question:}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+        \item retrieve relevant passages from source, docstrings, and docs by
+              semantic similarity,
+        \item build a prompt that includes those passages as context,
+        \item send the prompt to the language model for a grounded answer.
+  \end{itemize}
+      Responses cite the shortcuts they draw from, so users can verify claims.
+    \end{column}
+    \begin{column}{0.46\linewidth}
+      \figph[\linewidth]{Figure 2: AI Assistant tab showing a grounded answer
+      with citations to specific shortcuts}
+    \end{column}
+  \end{columns}
+\end{frame}
+\note{Explain RAG as grounding, not magic. The AI is steered toward retrieved
+text. Be precise on the next slide that grounding reduces but does not
+eliminate hallucination, because the model can still misread or extrapolate.}
+
+%--------------------------------------------------- Slide 15: RAG honesty
+\begin{frame}{What RAG does and does not do}
+  \begin{block}{Reduces hallucination}
+    Retrieval grounds answers in verified documentation, so the model is
+    steered toward the supplied context rather than free generation.
+  \end{block}
+  \begin{alertblock}{Does not remove the risk}
+    The model can still misread or extrapolate beyond the retrieved passages,
+    so grounding lowers but does not eliminate the risk.
+  \end{alertblock}
+  \vfill
+  \small We state this honestly because overclaiming invites justified
+  reviewer skepticism.
+\end{frame}
+\note{This slide pre-empts the strongest objection. The earlier drafts said
+RAG eliminates hallucination, which is too strong. Present the honest version
+and cite the hallucination survey literature when the paper is written.}
+
+%--------------------------------------------------- Slide 16: Enhanced script
+\begin{frame}{Enhanced pymolshortcuts.py script}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item Added 47 new shortcuts to the original 135-shortcut collection, for
+          182 in total.
+    \item New shortcuts focus on surface analysis, movie assembly, and
+          crystallographic operations.
+    \item Updated 32 existing shortcuts for the PyMOL 3.0 API, especially
+          scene management.
+    \item Backward compatible with PyMOL 2.x through conditional imports.
+    \item All shortcuts now carry NumPy-format docstrings and parameter
+          validation.
+  \end{itemize}
+\end{frame}
+\note{Here is the reconciled count: 135 plus 47 equals 182. Keep this figure
+everywhere. Backward compatibility eases the transition for labs running mixed
+PyMOL versions.}
+
+
+\section{Why shortcuts still matter}
+
+%--------------------------------------------------- Slide 17: Speed
+\begin{frame}{Advantage 1: speed and workflow efficiency}
+  \small\textit{The central question: why keep curated shortcuts when an AI
+  chatbot can generate PyMOL commands on demand? The next slides give the
+  concrete answer.}
+  \vspace{4pt}
+  \begin{columns}[T]
+    \begin{column}{0.54\linewidth}
+      \begin{itemize}[font=$\bullet$\scshape\bfseries]
+        \item A shortcut runs in under one second because it is pre-compiled.
+        \item An AI round trip takes 10 to 30 seconds: prompt, transmit,
+              inference, copy, paste, validate.
+        \item Interactive sessions run dozens to hundreds of commands, so each
+              delay compounds and breaks flow state.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.44\linewidth}
+      \figph[\linewidth]{Figure 3: workflow execution times, shortcut versus
+      AI generation, error bars over 50 trials}
+    \end{column}
+  \end{columns}
+  \vfill
+  \footnotesize\textit{Note: the timing numbers require a documented benchmark
+  before publication.}
+\end{frame}
+\note{Speed is the headline empirical claim, so be careful. Present the numbers
+as the goal of a benchmark that must be documented. Reviewers flagged that
+Figure 3 currently lacks a methods section, so either run a real benchmark or
+label the numbers as illustrative estimates.}
+
+%--------------------------------------------------- Slide 19: Reliability
+\begin{frame}{Advantage 2: reliability and scientific rigor}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item Shortcuts are tested, debugged code that behaves deterministically.
+    \item AI-generated code can hallucinate command names, invalid
+          parameters, or deprecated syntax.
+    \item Using AI code requires a validation cycle of testing, debugging, and
+          verification that erodes the time savings.
+    \item Integration tests detect when PyMOL API changes break a shortcut,
+          enabling rapid fixes.
+  \end{itemize}
+  \vfill
+  \small We describe this as high, tested reliability rather than guaranteed
+  correctness, because no code is absolutely guaranteed.
+\end{frame}
+\note{Soften the absolute language deliberately. Say tested reliability, not
+guaranteed correctness. The point still stands: validated code beats freshly
+generated code for routine tasks. Cite code-correctness evaluation work in the
+paper.}
+
+%--------------------------------------------------- Slide 20: Reproducibility
+\begin{frame}{Advantage 3: reproducibility and stability}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item A version-pinned shortcut library can be downloaded and rerun
+          exactly by other investigators.
+    \item Git provides permanent, immutable references.
+    \item AI-generated code drifts: models update, sampling varies, services
+          may be discontinued, so there is no stable reference point.
+    \item The History tab records which shortcuts ran with which parameters,
+          giving an exportable provenance trail.
+  \end{itemize}
+\end{frame}
+\note{Reproducibility is a strong, defensible advantage. Tie it back to the
+History tab. To make the argument airtight, the paper should archive a versioned
+release with a DOI and register an RRID, which the tool currently lacks.}
+
+%--------------------------------------------------- Slide 21: Cost/offline/security
+\begin{frame}{Advantage 4: cost, offline access, and data security}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item \textbf{Cost:} shortcuts are free and open source with no per-query
+          charge.
+    \item \textbf{Offline:} shortcuts run locally, which matters for field
+          stations and restricted-network facilities.
+    \item \textbf{Security:} local execution keeps proprietary or unpublished
+          structures on the user's machine.
+  \end{itemize}
+  \vfill
+  \small\textit{Honest caveat: our own AI Assistant tab uses a paid API and an
+  internet connection, so it shares these very trade-offs when enabled.}
+\end{frame}
+\note{Include the honest caveat out loud. The AI tab incurs the costs we
+criticize. Acknowledging this builds credibility and answers the obvious
+reviewer objection before it is raised.}
+
+%--------------------------------------------------- Slide 22: Education
+\begin{frame}{Advantage 5: educational value}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item The View Code button turns every shortcut into a working example of
+          correct syntax and parameter use.
+    \item Users progress from point-and-click, to reading the code, to writing
+          their own functions.
+    \item Exported histories from expert sessions become concrete teaching
+          material.
+    \item AI-generated code often arrives as a black box that does not build a
+          mental model.
+  \end{itemize}
+  \vfill
+  \small\textit{Analogy: shortcuts are a glass-walled kitchen. You watch the
+  cooking, so you learn to cook. A pure AI answer hands you the finished dish.}
+\end{frame}
+\note{Education is where curated tooling clearly beats an oracle. The
+glass-walled kitchen analogy resonates with teachers. Frame this as scaffolding
+that closes the gap between GUI-only use and scripting.}
+
+%--------------------------------------------------- Slide 23: Curation
+\begin{frame}{Advantage 6: expert curation and community validation}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item Shortcuts encode expert decisions about defaults, parameters, and
+          error handling.
+    \item Popular shortcuts have been exercised by many researchers, so bugs
+          surface and get fixed.
+    \item Consistent conventions across shortcuts reduce cognitive load.
+    \item Individually generated AI code receives no comparable cross-user
+          validation and varies in style.
+  \end{itemize}
+\end{frame}
+\note{This is the crowd-tested argument. Community use is a form of validation
+that a one-off generation cannot match. Keep it brief because it overlaps with
+the reliability slide.}
+
+%--------------------------------------------------- Slide 24: Interactive workflows
+\begin{frame}{Advantage 7: built for interactive workflows}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item \textbf{Command chaining:} shortcuts compose, so outputs feed the
+          next step (select, represent, color, orient, ray trace).
+    \item \textbf{State awareness:} shortcuts operate within PyMOL's
+          persistent state and can assume context.
+    \item \textbf{Tight loops:} change, evaluate, adjust, all within one
+          environment.
+    \item AI code is stateless and must be described anew each query, which
+          produces defensive, less efficient code.
+  \end{itemize}
+\end{frame}
+\note{The state point is subtle but important for a technical crowd. The AI has
+no view into the current session, so it must guess. Shortcuts leverage what
+already exists in memory.}
+
+%--------------------------------------------------- Slide 25: Sustainability
+\begin{frame}{Advantage 8: sustainability and community ownership}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item Open-source code hosted on GitHub remains available and is easily
+          migrated elsewhere.
+    \item No subscription to lapse and no company to pivot away.
+    \item If maintenance stops, any community member can fork and continue.
+    \item Commercial AI services concentrate control in one entity whose
+          priorities may diverge from scientific needs.
+  \end{itemize}
+\end{frame}
+\note{Sustainability closes the advantages list. The fork option is the key
+guarantee. Do not overstate the fragility of AI services, just note the genuine
+uncertainty about long-term availability and pricing.}
+
+%--------------------------------------------------- Slide 26: FAIR
+\begin{frame}{Alignment with FAIR principles}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item \textbf{Findable:} fuzzy search and the AI Assistant surface
+          relevant shortcuts from vague queries.
+    \item \textbf{Accessible:} automated installation removes command-line
+          setup.
+    \item \textbf{Interoperable:} standard plugin architecture and the public
+          PyMOL Python API, with JSON export.
+    \item \textbf{Reusable:} open licensing, docstrings, and version control.
+  \end{itemize}
+\end{frame}
+\note{FAIR gives a recognized framework that reviewers respect. Map each
+letter to a concrete plugin feature so the alignment is not hand-waving.}
+
+%--------------------------------------------------- Slide 27: Synergy
+\begin{frame}{Best of both worlds: a synergistic design}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item Shortcuts handle routine, well-defined tasks with instant, reliable
+          execution.
+    \item The AI Assistant handles exploration, explanation, and novel
+          situations.
+    \item A single interface supports a learning pipeline:
+          ask, execute, favorite, read the code, then internalize.
+    \item The assistant has context about installed shortcuts, history, and
+          favorites, which general chatbots lack.
+  \end{itemize}
+\end{frame}
+\note{Return to the thesis. The two are complementary, and the integrated
+interface makes the hand-off seamless. This is the payoff of shipping both in
+one plugin rather than sending users to an external chatbot.}
+
+%--------------------------------------------------- Slide 28: Comparison table
+\begin{frame}{Shortcuts versus AI code generation}
+  \small
+  \begin{center}
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+    \textbf{Dimension} & \textbf{Curated shortcut} & \textbf{AI generation} \\
+    \midrule
+    Latency          & under 1 s            & 10 to 30 s \\
+    Reliability      & tested, deterministic& variable, needs validation \\
+    Reproducibility  & version-pinned       & model and sampling drift \\
+    Offline          & yes                  & no \\
+    Marginal cost    & none                 & per-query API cost \\
+    Data locality    & stays local          & sent to external server \\
+    Novel questions  & limited              & strong \\
+    Explanation      & code plus docs       & natural language \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \vfill
+  \footnotesize One table replaces several pages of prose contrasts.
+\end{frame}
+\note{This consolidated table is the single most useful slide for scanning the
+argument. In the paper, it lets us cut several Discussion subsections to a
+sentence each. Point out that the bottom two rows favor AI, which keeps the
+comparison balanced.}
+
+%--------------------------------------------------- Slide 29: Testing
+\begin{frame}{Testing and code coverage}
+  \small
+  \begin{center}
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+    \textbf{Component} & \textbf{Lines of code} & \textbf{Coverage (\%)} \\
+    \midrule
+    Plugin GUI            & 2{,}847 & 95 \\
+    Shortcuts script      & 6{,}421 & 92 \\
+    Installation utilities& 318     & 98 \\
+    AI Assistant RAG      & 892     & 89 \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \vfill
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item Unit and integration tests, run with \texttt{make test}.
+    \item Tests were AI-generated and then manually reviewed, which we state
+          openly because our own argument is that AI code needs validation.
+  \end{itemize}
+\end{frame}
+\note{Own the irony directly: the tests were AI-generated and human-reviewed.
+Saying so pre-empts the obvious question and models the validation workflow we
+recommend. Name the coverage tool and confirm the counts before publication.}
+
+
+%--------------------------------------------------- Slide 30: Future directions
+\begin{frame}{Future directions}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item Richer AI queries: interactive code generation, debugging help, and
+          parameter tuning.
+    \item Vision-language input: generate code to reproduce an uploaded
+          visualization.
+    \item Collaboration: shared favorites, annotated histories, and team
+          snippet libraries.
+    \item Guided learning: structured tutorials with AI-evaluated challenges.
+    \item Broader reach: adapt the framework to ChimeraX, VMD, and other
+          tools.
+  \end{itemize}
+\end{frame}
+\note{Keep future work aspirational but grounded. The vision-language idea
+usually draws interest. Do not promise timelines. Broadening beyond PyMOL is
+the long-term vision.}
+
+%--------------------------------------------------- Slide 31: Summary
+\begin{frame}{Summary}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item The pymolshortcuts-manager plugin gives point-and-click access to
+          over 233 curated PyMOL 3.x shortcuts through six tabs.
+    \item Shortcuts provide instant execution, tested reliability,
+          reproducibility, offline operation, and long-term stability.
+    \item A RAG-based AI Assistant grounds answers in verified documentation
+          and reduces, though does not eliminate, hallucination.
+    \item Shortcuts and AI are complementary, and integrating both in one
+          interface is stronger than either alone.
+  \end{itemize}
+\end{frame}
+\note{The single-slide takeaway. If the audience remembers one thing, it is the
+complementary framing. Recap the six tabs and the shortcut count for
+consistency.}
+
+%--------------------------------------------------- Slide 32: Conclusions + resources
+\begin{frame}{Conclusions and resources}
+  \begin{block}
+    The age of AI does not diminish the value of curated shortcuts. It
+    clarifies and amplifies it because instantly executable, tested,
+    reproducible code becomes more valuable as code generation by AI becomes common.
+  \end{block}
+  \vfill
+  \textbf{Get the tools:}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item Plugin: \texttt{github.com/MooersLab/pymolshortcuts-manager}
+    \item Script: \texttt{github.com/MooersLab/pymolshortcuts}
+  \end{itemize}
+\end{frame}
+\note{Close on the amplification point, which is memorable and non-defensive.
+Leave the two repository links on screen during questions so people can find
+the tools.}
+
+%--------------------------------------------------- Acknowledgements
+\begin{frame}{Acknowledgements}
+  \begin{itemize}[font=$\bullet$\scshape\bfseries]
+    \item National Institutes of Health, grant numbers [insert verified R01
+          and P30 numbers].
+    \item The PyMOL user community, for feedback that shaped the plugin
+          features.
+    \item Anthropic, for API access to Claude for the AI Assistant.
+    \item Core facility support from the Laboratory of Biomolecular Structure
+          and Function.
+  \end{itemize}
+  \vfill
+  \begin{center}\small
+    Blaine Mooers \quad\textbullet\quad \texttt{blaine-mooers@ou.edu}\\
+    Department of Biochemistry and Physiology, University of Oklahoma Health
+    Campus
+  \end{center}
+\end{frame}
+\note{Thank funders and the community. Replace the placeholder grant numbers
+with the verified R01 and P30 numbers before presenting, because the draft
+carried placeholder values. End with an invitation for questions.}
+
+\end{document}
