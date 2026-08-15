@@ -1,6 +1,6 @@
 ![Version](https://img.shields.io/static/v1?label=sofware-fayre-2026-slides&message=0.1&color=brightcolor)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![License](https://img.shields.io/badge/License-CC4-green)
+![License](https://img.shields.io/badge/License-CC4-orange)
 
 # SoftwareFayre2026
 
