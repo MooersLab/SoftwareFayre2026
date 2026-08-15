@@ -1,4 +1,5 @@
-![Version](https://img.shields.io/static/v1?label=SofwareFayre2026=0.4.1&color=brightcolor)
+![Version](https://img.shields.io/static/v1?label=writing-time-spent-heatmap&message=0.4.1&color=brightcolor)
+![Version](https://img.shields.io/static/v1?label=sofware-fayre-2026=0.1&color=brightcolor)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 ![License](https://img.shields.io/badge/License-CC4-green)
 
