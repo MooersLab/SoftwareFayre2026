@@ -7,8 +7,16 @@ I presented a 45-minute tutorial about the [PyMOL Shortcuts Manager](https://git
 See the [meeting website](http://www.cryst.chem.uu.nl/lutz/thursday.html).
 
 The `main.pdf` contains the slides. 
-The `main.tex` in used with LaTeX and beamer to generate the slides.
-The `Makefile` is used to create the PDF with the `make` command.
-The figures are in `./figs` folder.
+The `main.tex` is used with LaTeX and Beamer to generate the slides.
+The `Makefile` creates the PDF with the `make` command.
 
+## LICENSE
 
+The source code is covered by the MIT License.
+The images are covered by a Creative Commons Version 4 license.
+
+## Funding
+
+- NIH: R01 CA242845.
+- NIH: P30 CA225520 (PI: R. Mannel).
+- NIH: P20 GM103640 and P30 GM145423 (PI: A. West).
