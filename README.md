@@ -12,7 +12,7 @@ See the [meeting website](http://www.cryst.chem.uu.nl/lutz/thursday.html).
 
 The `main.pdf` contains the slides. 
 The `main.tex` is used with LaTeX and Beamer to generate the slides.
-The `Makefile` creates the PDF with the `make` command.
+The `Makefile` generates the PDF when running `make`.
 
 ## LICENSE
 
